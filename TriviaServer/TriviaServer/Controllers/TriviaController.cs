@@ -18,7 +18,7 @@ namespace TriviaServer.Controllers
         }
 
         // GET api/<TriviaController>/5
-        [HttpGet("{id}")]
+        [HttpGet("GetQuestion_{id}")]
         public async Task<Question> Get(int id)
         {
             Question question = await DatabaseManager.Instance.GetQuestion(id);
@@ -33,12 +33,17 @@ namespace TriviaServer.Controllers
         }
 
         // PUT api/<TriviaController>/5
-        [HttpPut("{value}")]
-        public void Put(string value)
+        [HttpGet("AddPlayer_{value}")]
+        public Task<int> Put(string value)
         {
-            DatabaseManager.Instance.AddPlayer(value);
+            return DatabaseManager.Instance.AddPlayer(value);
         }
 
+        [HttpGet("GetActive")]
+/*        public Task<PlayerInformation> GetActivePlayer()
+        {
+            List<PlayerInformation> playerInfo = 
+        }*/
         // DELETE api/<TriviaController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)

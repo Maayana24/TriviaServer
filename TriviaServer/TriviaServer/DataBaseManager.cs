@@ -94,15 +94,15 @@ namespace TriviaServer
             }
         }
 
-        public async void AddPlayer(string name)
+        public async Task<int> AddPlayer(string name)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            string query = $"INSERT INTO \"public\".\"Players\" (name) VALUES ('{name}')";
+            string query = $"INSERT INTO \"public\".\"Players\" (name) VALUES ('{name}') returning id";
             using var command = new NpgsqlCommand(query, connection);
-            var result = await command.ExecuteNonQueryAsync();
-            Console.WriteLine(result);
+            var result = await command.ExecuteScalarAsync();
+            return int.Parse(result.ToString());
         }
     }
 }
