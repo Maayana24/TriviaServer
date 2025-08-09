@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Text.Json;
 using Npgsql;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+
 
 namespace TriviaServer
 {
@@ -111,6 +110,63 @@ namespace TriviaServer
             await connection.OpenAsync();
 
             string query = $"UPDATE \"public\".\"Players\" SET \"waitingForProgress\" = true WHERE \"id\" = {id};";
+            using var command = new NpgsqlCommand(query, connection);
+            await command.ExecuteNonQueryAsync();
+        }
+
+        public async Task<string> GetWaitingPlayer(int id)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            string query = $"SELECT * FROM \"public\".\"Players\" WHERE \"id\" != {id} AND \"waitingForProgress\" = true";
+            using var command = new NpgsqlCommand(query, connection);
+            var result = await command.ExecuteReaderAsync();
+            while (result.Read())
+            {
+                PlayerInformation pi = new PlayerInformation(result.GetString(result.GetOrdinal("name")));
+                pi.Score = result.GetInt32(result.GetOrdinal("score"));
+                pi.ThinkingTime = result.GetFloat(result.GetOrdinal("thinkingTime"));
+                pi.CurrentQuestion = result.GetInt32(result.GetOrdinal("currentQuetion"));
+                pi.WaitingForProgress = true;
+                pi.Active = true;
+                return JsonSerializer.Serialize(pi);
+            }
+            return "{}";
+        }
+
+        public async Task<int> GetQuestionCount()
+        {
+            List<Question> questions = await GetQuestions();
+            return questions.Count;
+        }
+
+        public async Task UpdatePlayerQuestion(int id, int question)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            string query = $"UPDATE \"public\".\"Players\" SET \"waitingForProgress\" = false, \"currentQuetion\" = {question} WHERE \"id\" = {id};";
+            using var command = new NpgsqlCommand(query, connection);
+            await command.ExecuteNonQueryAsync();
+        }
+
+        public async Task UpdatePlayerProgress(int id, bool prog)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            string query = $"UPDATE \"public\".\"Players\" SET \"waitingForProgress\" = {prog}, \"active\" = {prog} WHERE \"id\" = {id};";
+            using var command = new NpgsqlCommand(query, connection);
+            await command.ExecuteNonQueryAsync();
+        }
+
+        public async Task UpdatePlayerScore(int id, int score, float time)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            string query = $"UPDATE \"public\".\"Players\" SET \"score\" = {score}, \"thinkingTime\" = {time} WHERE \"id\" = {id};";
             using var command = new NpgsqlCommand(query, connection);
             await command.ExecuteNonQueryAsync();
         }

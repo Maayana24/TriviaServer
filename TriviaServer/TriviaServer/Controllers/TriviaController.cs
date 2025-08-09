@@ -55,5 +55,29 @@ namespace TriviaServer.Controllers
         {
             return DatabaseManager.Instance.MakePlayerWait(value);
         }
+
+        [HttpPost("UpdatePlayerQuestion_{id}_{question}")]
+        public Task UpdatePlayerQuestion(int id, int question)
+        {
+            return DatabaseManager.Instance.UpdatePlayerQuestion(id, question);
+        }
+
+        [HttpPost("UpdatePlayerProgress_{id}_{progress}")]
+        public Task UpdatePlayerQuestion(int id, bool progress)
+        {
+            return DatabaseManager.Instance.UpdatePlayerProgress(id, progress);
+        }
+
+        [HttpPost("UpdatePlayerScore_{id}_{score}_{time}")]
+        public Task UpdatePlayerQuestion(int id, int score, float time)
+        {
+            return DatabaseManager.Instance.UpdatePlayerScore(id, score, time);
+        }
+
+        [HttpGet("GetWaitingPlayer_{value}")]
+        public Task<string> GetWaingPlayer(int value)
+        {
+            return DatabaseManager.Instance.GetWaitingPlayer(value);
+        }
     }
 }
