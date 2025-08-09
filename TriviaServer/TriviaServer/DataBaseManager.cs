@@ -104,5 +104,15 @@ namespace TriviaServer
             var result = await command.ExecuteScalarAsync();
             return int.Parse(result.ToString());
         }
+
+        public async Task MakePlayerWait(int id)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            string query = $"UPDATE \"public\".\"Players\" SET \"waitingForProgress\" = true WHERE \"id\" = {id};";
+            using var command = new NpgsqlCommand(query, connection);
+            await command.ExecuteNonQueryAsync();
+        }
     }
 }

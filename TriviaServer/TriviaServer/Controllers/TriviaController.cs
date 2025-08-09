@@ -49,5 +49,11 @@ namespace TriviaServer.Controllers
         public void Delete(int id)
         {
         }
+
+        [HttpPost("MakePlayerWait_{value}")]
+        public Task MakePlayerWait(int value)
+        {
+            return DatabaseManager.Instance.MakePlayerWait(value);
+        }
     }
 }
