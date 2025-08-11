@@ -79,5 +79,11 @@ namespace TriviaServer.Controllers
         {
             return DatabaseManager.Instance.GetWaitingPlayer(value);
         }
+
+        [HttpPost("DeactivateAll")]
+        public Task DeactivateAll()
+        {
+            return DatabaseManager.Instance.DeactivateAll();
+        }
     }
 }
