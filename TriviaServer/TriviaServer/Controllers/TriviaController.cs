@@ -50,37 +50,42 @@ namespace TriviaServer.Controllers
         {
         }
 
-        [HttpPost("MakePlayerWait_{value}")]
+        [HttpGet("MakePlayerWait_{value}")]
         public Task MakePlayerWait(int value)
         {
             return DatabaseManager.Instance.MakePlayerWait(value);
         }
 
-        [HttpPost("UpdatePlayerQuestion_{id}_{question}")]
+        [HttpGet("UpdatePlayerQuestion_{id}_{question}")]
         public Task UpdatePlayerQuestion(int id, int question)
         {
             return DatabaseManager.Instance.UpdatePlayerQuestion(id, question);
         }
 
-        [HttpPost("UpdatePlayerProgress_{id}_{progress}")]
+        [HttpGet("UpdatePlayerProgress_{id}_{progress}")]
         public Task UpdatePlayerQuestion(int id, bool progress)
         {
             return DatabaseManager.Instance.UpdatePlayerProgress(id, progress);
         }
 
-        [HttpPost("UpdatePlayerScore_{id}_{score}_{time}")]
+        [HttpGet("UpdatePlayerScore_{id}_{score}_{time}")]
         public Task UpdatePlayerQuestion(int id, int score, float time)
         {
             return DatabaseManager.Instance.UpdatePlayerScore(id, score, time);
         }
 
-        [HttpGet("GetWaitingPlayer_{value}")]
-        public Task<string> GetWaingPlayer(int value)
+        [HttpGet("GetWaitingPlayer_{value}_{nextQuestion}")]
+        public Task<string> GetWaingPlayer(int value, int nextQuestion)
         {
-            return DatabaseManager.Instance.GetWaitingPlayer(value);
+            return DatabaseManager.Instance.GetWaitingPlayer(value, nextQuestion);
+        }
+        [HttpGet("GetQuestionAmount")]
+        public Task<int> GetQuestionAmount()
+        {
+            return DatabaseManager.Instance.GetQuestionAmount();
         }
 
-        [HttpPost("DeactivateAll")]
+        [HttpGet("DeactivateAll")]
         public Task DeactivateAll()
         {
             return DatabaseManager.Instance.DeactivateAll();

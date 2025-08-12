@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Data;
+using System.Text.Json;
 using Npgsql;
 
 
@@ -114,12 +115,13 @@ namespace TriviaServer
             await command.ExecuteNonQueryAsync();
         }
 
-        public async Task<string> GetWaitingPlayer(int id)
+        public async Task<string> GetWaitingPlayer(int id, int nextQuestion)
         {
+            int currentQuestion = nextQuestion - 1;
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            string query = $"SELECT * FROM \"public\".\"Players\" WHERE \"id\" != {id} AND \"waitingForProgress\" = true";
+            string query = $"SELECT * FROM \"public\".\"Players\" WHERE \"id\" != {id} AND \"active\" = true AND ((\"waitingForProgress\" = true AND \"currentQuetion\" = {currentQuestion}) OR \"currentQuetion\" = {nextQuestion});";
             using var command = new NpgsqlCommand(query, connection);
             var result = await command.ExecuteReaderAsync();
             while (result.Read())
@@ -178,6 +180,21 @@ namespace TriviaServer
             string query = $"UPDATE \"public\".\"Players\" SET \"waitingForProgress\" = false, \"active\" = false;";
             using var command = new NpgsqlCommand(query, connection);
             await command.ExecuteNonQueryAsync();
+        }
+        public async Task<int> GetQuestionAmount()
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            string query = "SELECT COUNT(*) FROM \"Questions\";";
+            using var command = new NpgsqlCommand(query, connection);
+            var result = await command.ExecuteReaderAsync();
+            while (result.Read())
+            {
+                int pi = result.GetInt16(0);
+                return pi;
+            }
+            return -1;
         }
     }
 }
